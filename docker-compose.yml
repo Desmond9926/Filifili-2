@@ -46,7 +46,8 @@ services:
       retries: 10
     networks:
       my_network:
-        ipv4_address: 172.18.0.3
+        external: true
+        ipv4_address: 172.18.0.4
 
   worker:
     build:
@@ -72,7 +73,7 @@ services:
              node packages/worker/dist/worker.js"
     networks:
       my_network:
-        ipv4_address: 172.18.0.4
+        ipv4_address: 172.18.0.5
 
   web:
     build:
@@ -102,16 +103,9 @@ services:
              pnpm --filter @filifili/web start"
     networks:
       my_network:
-        ipv4_address: 172.18.0.5
+        ipv4_address: 172.18.0.6
 
 volumes:
   postgres_data:
   redis_data:
 
-networks:
-  my_network:
-    name: my_network
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.18.0.0/24
