@@ -20,7 +20,7 @@ services:
       retries: 10
     networks:
       filifili_network:
-        ipv4_address: 172.18.0.2
+        ipv4_address: 172.18.0.7
 
   redis:
     image: redis:7.2.4-alpine
