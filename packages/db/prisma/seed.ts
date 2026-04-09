@@ -1,8 +1,10 @@
-import { PrismaClient } from "@prisma/client";
+import prismaPkg from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { config } from "dotenv";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+
+const { PrismaClient } = prismaPkg;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 config({ path: path.resolve(__dirname, "../../../.env") });
