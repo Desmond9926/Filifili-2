@@ -28,7 +28,6 @@ services:
     restart: unless-stopped
     env_file:
       - .env
-      - ./apps/web/.env.local
     command: >
       sh -c 'PASS=$$(printf "%s" "$$REDIS_URL" | sed -n "s#redis://:\([^@]*\)@.*#\1#p");
       exec redis-server --appendonly yes --requirepass "$$PASS"'
@@ -62,7 +61,6 @@ services:
         condition: service_healthy
     env_file:
       - .env
-      - ./apps/web/.env.local
     environment:
       DATABASE_URL: ${DATABASE_URL:-postgresql://postgreRoot:desmondmizi9926@postgres:5432/filifili?schema=public}
       REDIS_URL: ${REDIS_URL}
@@ -89,7 +87,6 @@ services:
         condition: service_healthy
     env_file:
       - .env
-      - ./apps/web/.env.local
     environment:
       DATABASE_URL: ${DATABASE_URL:-postgresql://postgreRoot:desmondmizi9926@postgres:5432/filifili?schema=public}
       REDIS_URL: ${REDIS_URL}
