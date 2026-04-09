@@ -19,7 +19,7 @@ services:
       timeout: 5s
       retries: 10
     networks:
-      my_network:
+      filifili_network:
         ipv4_address: 172.18.0.2
 
   redis:
@@ -45,8 +45,7 @@ services:
       timeout: 5s
       retries: 10
     networks:
-      my_network:
-        external: true
+      filifili_network:
         ipv4_address: 172.18.0.4
 
   worker:
@@ -72,7 +71,7 @@ services:
              pnpm --filter @filifili/worker build &&
              node packages/worker/dist/worker.js"
     networks:
-      my_network:
+      filifili_network:
         ipv4_address: 172.18.0.5
 
   web:
@@ -102,10 +101,14 @@ services:
              pnpm --filter @filifili/web build &&
              pnpm --filter @filifili/web start"
     networks:
-      my_network:
+      filifili_network:
         ipv4_address: 172.18.0.6
 
 volumes:
   postgres_data:
   redis_data:
 
+networks:
+  filifili_network:
+    external: true
+    name: my_network
