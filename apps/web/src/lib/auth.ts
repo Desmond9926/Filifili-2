@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import { NextRequest } from "next/server";
 import {
   AuthContext,
@@ -9,8 +8,7 @@ import {
 } from "@filifili/api-kit";
 
 export const getAuthContext = (req: NextRequest): AuthContext => {
-  const cookieStore = cookies();
-  const tokenCookie = cookieStore.get("token")?.value;
+  const tokenCookie = req.cookies.get("token")?.value;
   return {
     authorization: req.headers.get("authorization") ?? undefined,
     cookies: { token: tokenCookie }
