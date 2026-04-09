@@ -18,6 +18,11 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       filifili_network:
         ipv4_address: 172.18.0.7
@@ -44,6 +49,11 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       filifili_network:
         ipv4_address: 172.18.0.4
@@ -70,6 +80,11 @@ services:
       sh -c "pnpm --filter @filifili/db prisma:generate &&
              pnpm --filter @filifili/worker build &&
              node packages/worker/dist/worker.js"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       filifili_network:
         ipv4_address: 172.18.0.5
@@ -100,6 +115,11 @@ services:
       sh -c "pnpm --filter @filifili/db prisma:generate &&
              pnpm --filter @filifili/web build &&
              pnpm --filter @filifili/web start"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       filifili_network:
         ipv4_address: 172.18.0.6
