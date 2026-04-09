@@ -1,0 +1,120 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: filifili_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: filifili
+      POSTGRES_USER: ${POSTGRES_USER:-postgreRoot}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-desmondmizi9926}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgreRoot} -d filifili"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      my_network:
+        ipv4_address: 172.18.0.2
+
+  redis:
+    image: redis:7.2.4-alpine
+    container_name: filifili_redis
+    restart: unless-stopped
+    env_file:
+      - .env
+      - ./apps/web/.env.local
+    command: >
+      sh -c 'PASS=$$(printf "%s" "$$REDIS_URL" | sed -n "s#redis://:\([^@]*\)@.*#\1#p");
+      exec redis-server --appendonly yes --requirepass "$$PASS"'
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "PASS=$$(printf \"%s\" \"$$REDIS_URL\" | sed -n \"s#redis://:\\([^@]*\\)@.*#\\1#p\"); redis-cli -a \"$$PASS\" ping"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      my_network:
+        ipv4_address: 172.18.0.3
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    container_name: filifili_worker
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - .env
+      - ./apps/web/.env.local
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql://postgreRoot:desmondmizi9926@postgres:5432/filifili?schema=public}
+      REDIS_URL: ${REDIS_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      NODE_ENV: production
+    command: >
+      sh -c "pnpm --filter @filifili/db prisma:generate &&
+             pnpm --filter @filifili/worker build &&
+             node packages/worker/dist/worker.js"
+    networks:
+      my_network:
+        ipv4_address: 172.18.0.4
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    container_name: filifili_web
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - .env
+      - ./apps/web/.env.local
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql://postgreRoot:desmondmizi9926@postgres:5432/filifili?schema=public}
+      REDIS_URL: ${REDIS_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      NODE_ENV: production
+      PORT: 3000
+      NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL:-http://localhost:3000}
+    ports:
+      - "3000:3000"
+    command: >
+      sh -c "pnpm --filter @filifili/db prisma:generate &&
+             pnpm --filter @filifili/web build &&
+             pnpm --filter @filifili/web start"
+    networks:
+      my_network:
+        ipv4_address: 172.18.0.5
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  my_network:
+    name: my_network
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/24

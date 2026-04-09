@@ -1,0 +1,21 @@
+FROM node:20-bookworm-slim
+
+WORKDIR /app
+
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends ffmpeg \
+  && rm -rf /var/lib/apt/lists/*
+
+RUN corepack enable
+
+COPY package.json pnpm-workspace.yaml tsconfig.json ./
+COPY apps/web/package.json ./apps/web/package.json
+COPY packages/api-kit/package.json ./packages/api-kit/package.json
+COPY packages/db/package.json ./packages/db/package.json
+COPY packages/sdk/package.json ./packages/sdk/package.json
+COPY packages/types/package.json ./packages/types/package.json
+COPY packages/worker/package.json ./packages/worker/package.json
+
+RUN pnpm install --frozen-lockfile=false
+
+COPY . .

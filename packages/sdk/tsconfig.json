@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "paths": {
+      "@filifili/types": ["packages/types/src"],
+      "@filifili/types/*": ["packages/types/src/*"]
+    }
+  },
+  "include": ["src"]
+}

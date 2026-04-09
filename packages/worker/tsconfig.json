@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": ".",
+    "paths": {
+      "@filifili/db": ["packages/db/src"],
+      "@filifili/db/*": ["packages/db/src/*"]
+    }
+  },
+  "include": ["src"]
+}

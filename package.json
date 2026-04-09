@@ -1,0 +1,17 @@
+{
+  "name": "filifili",
+  "private": true,
+  "version": "0.0.0",
+  "workspaces": [
+    "packages/*",
+    "apps/*",
+    "packages/worker"
+  ],
+  "scripts": {
+    "typecheck": "pnpm -r typecheck",
+    "e2e:happy-path": "node scripts/e2e-happy-path.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.7"
+  }
+}
