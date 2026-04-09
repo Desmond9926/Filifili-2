@@ -9,7 +9,7 @@
     "prisma:format": "prisma format"
   },
   "prisma": {
-    "seed": "tsx ./prisma/seed.ts"
+    "seed": "node ./prisma/seed.cjs"
   },
   "dependencies": {
     "@prisma/client": "^5.17.0",
