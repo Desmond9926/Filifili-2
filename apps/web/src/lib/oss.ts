@@ -30,3 +30,8 @@ export const publicUrl = (key: string) => {
   const base = required("QINIU_PUBLIC_BASE_URL", process.env.QINIU_PUBLIC_BASE_URL).replace(/\/$/, "");
   return `${base}/${key}`;
 };
+
+export const sourceUrl = (key: string) => {
+  const base = required("QINIU_PUBLIC_BASE_URL", process.env.QINIU_PUBLIC_BASE_URL).replace(/\/$/, "");
+  return `${base}/${key}`;
+};

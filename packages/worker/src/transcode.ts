@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdir, mkdtemp, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
@@ -61,6 +61,8 @@ export const transcodeToHls = async (input: string): Promise<TranscodeResult> =>
   const hlsDir = path.join(tempDir, "hls");
   const playlist = path.join(hlsDir, "playlist.m3u8");
   const coverPath = path.join(tempDir, "cover.jpg");
+
+  await mkdir(hlsDir, { recursive: true });
 
   // create HLS
   await run(ffmpegBin, [

@@ -17,12 +17,18 @@ const connection = process.env.REDIS_URL
     })();
 
 const processJob = async (job: Job<TranscodeJobPayload>) => {
-  const { videoId, originalUrl } = job.data;
+  const { videoId, inputUrl, originalUrl } = job.data;
 
   let transcodeDir: string | undefined;
   try {
-    logger.info("transcode.start", { videoId, jobId: job.id, attempt: job.attemptsMade + 1 });
-    const result = await transcodeToHls(originalUrl);
+    logger.info("transcode.start", {
+      videoId,
+      jobId: job.id,
+      attempt: job.attemptsMade + 1,
+      inputUrl,
+      originalUrl
+    });
+    const result = await transcodeToHls(inputUrl);
     transcodeDir = result.baseDir;
 
     const hlsDir = path.dirname(result.hlsPath);

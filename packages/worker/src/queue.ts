@@ -14,7 +14,8 @@ export const transcodeQueue = new Queue(TRANSCODE_QUEUE, { connection });
 
 export interface TranscodeJobPayload {
   videoId: string;
-  originalUrl: string;
+  inputUrl: string;
+  originalUrl?: string;
 }
 
 export const enqueueTranscodeJob = async (payload: TranscodeJobPayload) => {

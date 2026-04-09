@@ -1,10 +1,21 @@
+import { Queue } from "bullmq";
+
 export interface TranscodeJobPayload {
   videoId: string;
-  originalUrl: string;
+  inputUrl: string;
+  originalUrl?: string;
 }
 
-// Placeholder enqueue; integration with BullMQ/worker can be added later.
-export const enqueueTranscodeJob = async (_payload: TranscodeJobPayload) => {
-  // In real implementation, push to queue.
-  return true;
+const redisUrl = process.env.REDIS_URL;
+
+const connection = redisUrl
+  ? { url: redisUrl }
+  : (() => {
+      throw new Error("REDIS_URL is required for worker queue");
+    })();
+
+const transcodeQueue = new Queue<TranscodeJobPayload>("transcode", { connection });
+
+export const enqueueTranscodeJob = async (payload: TranscodeJobPayload) => {
+  await transcodeQueue.add("transcode", payload, { attempts: 3, backoff: 5000 });
 };
