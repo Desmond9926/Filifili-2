@@ -4,6 +4,8 @@ import { prisma } from "@filifili/db/src/client";
 import { mustAuth } from "@/lib/auth";
 import { withErrorHandling } from "@/lib/response";
 
+export const dynamic = "force-dynamic";
+
 export const GET = withErrorHandling(async (req: NextRequest, ctx?: unknown) => {
   const auth = (() => {
     try {

@@ -5,6 +5,8 @@ import { mustAuth, mustRole } from "@/lib/auth";
 import { withErrorHandling } from "@/lib/response";
 import { draftCreateSchema } from "@/lib/schemas";
 
+export const dynamic = "force-dynamic";
+
 export const POST = withErrorHandling(async (req: NextRequest) => {
   const payload = mustAuth(req);
   mustRole(payload, ["creator", "admin", "moderator"]);

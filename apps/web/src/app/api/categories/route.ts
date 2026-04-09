@@ -5,6 +5,8 @@ import { mustAuth, mustRole } from "@/lib/auth";
 import { withErrorHandling } from "@/lib/response";
 import { categoryCreateSchema } from "@/lib/schemas";
 
+export const dynamic = "force-dynamic";
+
 export const GET = withErrorHandling(async () => {
   const categories = await prisma.category.findMany({
     orderBy: { name: "asc" }

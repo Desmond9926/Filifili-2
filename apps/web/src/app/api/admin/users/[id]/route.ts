@@ -4,6 +4,8 @@ import { prisma } from "@filifili/db/src/client";
 import { mustAuth, mustRole } from "@/lib/auth";
 import { withErrorHandling } from "@/lib/response";
 
+export const dynamic = "force-dynamic";
+
 export const POST = withErrorHandling(async (req: NextRequest, ctx?: unknown) => {
   const params = (ctx as { params?: { id: string } } | undefined)?.params;
   const id = params?.id;

@@ -4,6 +4,8 @@ import { prisma } from "@filifili/db/src/client";
 import { mustAuth, mustRole } from "@/lib/auth";
 import { withErrorHandling } from "@/lib/response";
 
+export const dynamic = "force-dynamic";
+
 const schema = {
   parse: (body: any) => {
     const { action, reason } = body ?? {};

@@ -5,6 +5,8 @@ import { mustAuth } from "@/lib/auth";
 import { withErrorHandling } from "@/lib/response";
 import { commentCreateSchema } from "@/lib/schemas";
 
+export const dynamic = "force-dynamic";
+
 export const POST = withErrorHandling(async (req: NextRequest, ctx?: unknown) => {
   const params = (ctx as { params?: { id: string } } | undefined)?.params;
   const commentId = params?.id;

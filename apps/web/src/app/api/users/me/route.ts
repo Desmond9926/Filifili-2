@@ -5,6 +5,8 @@ import { mustAuth } from "@/lib/auth";
 import { withErrorHandling } from "@/lib/response";
 import { userUpdateSchema } from "@/lib/schemas";
 
+export const dynamic = "force-dynamic";
+
 export const PATCH = withErrorHandling(async (req: NextRequest) => {
   const auth = mustAuth(req);
   const body = parseBody(userUpdateSchema, await req.json());

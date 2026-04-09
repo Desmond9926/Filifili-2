@@ -5,6 +5,8 @@ import { mustAuth, mustRole } from "@/lib/auth";
 import { withErrorHandling } from "@/lib/response";
 import { categoryUpdateSchema } from "@/lib/schemas";
 
+export const dynamic = "force-dynamic";
+
 export const PATCH = withErrorHandling(async (req: NextRequest, ctx?: unknown) => {
   const payload = mustAuth(req);
   mustRole(payload, ["admin"]);

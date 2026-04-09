@@ -7,6 +7,8 @@ import { validateUpload } from "@/lib/upload";
 import { enqueueTranscodeJob } from "@/lib/queue";
 import { publicUrl, sourceUrl } from "@/lib/oss";
 
+export const dynamic = "force-dynamic";
+
 const schema = {
   parse: (input: any) => {
     const { key, sizeBytes, durationSec, mime } = input ?? {};

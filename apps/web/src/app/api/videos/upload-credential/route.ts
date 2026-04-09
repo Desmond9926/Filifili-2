@@ -6,6 +6,8 @@ import { withErrorHandling } from "@/lib/response";
 import { buildObjectKey, validateUpload } from "@/lib/upload";
 import { createUploadToken, getUploadUrl } from "@/lib/oss";
 
+export const dynamic = "force-dynamic";
+
 const credentialSchema = {
   parse: (input: any) => {
     const { videoId, filename, mime, sizeBytes, durationSec } = input ?? {};
