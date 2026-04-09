@@ -79,7 +79,7 @@ services:
     command: >
       sh -c "pnpm --filter @filifili/db prisma:generate &&
              pnpm --filter @filifili/worker build &&
-             node packages/worker/dist/worker.js"
+             if [ -f packages/worker/dist/worker.js ]; then node packages/worker/dist/worker.js; else node packages/worker/dist/src/worker.js; fi"
     logging:
       driver: "json-file"
       options:

@@ -8,7 +8,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "dev": "node dist/worker.js"
+    "dev": "node -e \"const { existsSync } = require('node:fs'); const { spawn } = require('node:child_process'); const target = existsSync('dist/worker.js') ? 'dist/worker.js' : 'dist/src/worker.js'; const child = spawn(process.execPath, [target], { stdio: 'inherit' }); child.on('exit', code => process.exit(code ?? 0));\""
   },
   "dependencies": {
     "@prisma/client": "^5.17.0",
