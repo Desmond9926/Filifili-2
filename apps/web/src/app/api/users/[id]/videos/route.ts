@@ -5,6 +5,8 @@ import { withErrorHandling } from "@/lib/response";
 import { userVideoListQuerySchema } from "@/lib/schemas";
 import { z } from "zod";
 
+export const dynamic = "force-dynamic";
+
 export const GET = withErrorHandling(async (req: NextRequest, ctx?: unknown) => {
   const params = (ctx as { params?: { id: string } } | undefined)?.params;
   const userId = params?.id;

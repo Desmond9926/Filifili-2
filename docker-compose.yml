@@ -114,7 +114,7 @@ services:
     command: >
       sh -c "pnpm --filter @filifili/db prisma:generate &&
              pnpm --filter @filifili/web build &&
-             pnpm --filter @filifili/web start"
+             node apps/web/.next/standalone/server.js"
     logging:
       driver: "json-file"
       options:

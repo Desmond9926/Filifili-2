@@ -6,6 +6,8 @@ import { withErrorHandling } from "@/lib/response";
 import { userVideoListQuerySchema } from "@/lib/schemas";
 import { z } from "zod";
 
+export const dynamic = "force-dynamic";
+
 export const GET = withErrorHandling(async (req: NextRequest) => {
   const auth = mustAuth(req);
   mustRole(auth, ["creator", "admin", "moderator"]);

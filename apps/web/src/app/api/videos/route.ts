@@ -5,6 +5,8 @@ import { withErrorHandling } from "@/lib/response";
 import { videoListQuerySchema } from "@/lib/schemas";
 import { z } from "zod";
 
+export const dynamic = "force-dynamic";
+
 export const GET = withErrorHandling(async (req: NextRequest) => {
   const query = parseQuery(
     videoListQuerySchema,

@@ -5,6 +5,8 @@ import { mustAuth, mustRole } from "@/lib/auth";
 import { withErrorHandling } from "@/lib/response";
 import { adminUserListQuerySchema } from "@/lib/schemas";
 
+export const dynamic = "force-dynamic";
+
 export const GET = withErrorHandling(async (req: NextRequest) => {
   const auth = mustAuth(req);
   mustRole(auth, ["admin"]);
