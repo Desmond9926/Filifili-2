@@ -6,7 +6,8 @@
   "scripts": {
     "prisma:generate": "prisma generate",
     "prisma:migrate:dev": "prisma migrate dev",
-    "prisma:format": "prisma format"
+    "prisma:format": "prisma format",
+    "prisma:seed:ready": "pnpm prisma:generate && prisma db seed"
   },
   "prisma": {
     "seed": "node ./prisma/seed.cjs"

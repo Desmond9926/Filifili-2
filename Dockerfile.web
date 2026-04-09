@@ -20,4 +20,6 @@ RUN pnpm install --frozen-lockfile=false
 
 COPY . .
 
+RUN pnpm --filter @filifili/db prisma:generate
+
 EXPOSE 3000

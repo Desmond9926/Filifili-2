@@ -19,3 +19,5 @@ COPY packages/worker/package.json ./packages/worker/package.json
 RUN pnpm install --frozen-lockfile=false
 
 COPY . .
+
+RUN pnpm --filter @filifili/db prisma:generate
