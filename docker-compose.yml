@@ -9,8 +9,7 @@ services:
       POSTGRES_DB: filifili
       POSTGRES_USER: ${POSTGRES_USER:-postgreRoot}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-desmondmizi9926}
-    ports:
-      - "5432:5432"
+
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -36,8 +35,7 @@ services:
     command: >
       sh -c 'PASS=$$(printf "%s" "$$REDIS_URL" | sed -n "s#redis://:\([^@]*\)@.*#\1#p");
       exec redis-server --appendonly yes --requirepass "$$PASS"'
-    ports:
-      - "6379:6379"
+
     volumes:
       - redis_data:/data
     healthcheck:
@@ -109,7 +107,7 @@ services:
       NODE_ENV: production
       PORT: 3000
       NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL:-http://localhost:3000}
-      
+
     command: >
       sh -c "pnpm --filter @filifili/db prisma:generate &&
              pnpm --filter @filifili/web build &&
