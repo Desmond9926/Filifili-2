@@ -31,7 +31,8 @@ export function Nav() {
       <div className="nav-left">
         <Link href="/">Filifili</Link>
         <Link href="/categories">分类</Link>
-        {user && <Link href="/upload">投稿</Link>}
+        {user && ["creator", "admin", "moderator"].includes(user.role) && <Link href="/upload">投稿</Link>}
+        {user && user.role === "user" && <Link href="/creator-apply">申请创作者</Link>}
         {user && ["creator", "admin", "moderator"].includes(user.role) && (
           <Link href="/my-videos">我的投稿</Link>
         )}
@@ -45,6 +46,7 @@ export function Nav() {
           <Link href="/admin/comments">评论管理</Link>
         )}
         {user && user.role === "admin" && <Link href="/admin/users">用户管理</Link>}
+        {user && user.role === "admin" && <Link href="/admin/creator-applications">创作者审核</Link>}
         {user && user.role === "admin" && <Link href="/admin/categories">分类管理</Link>}
       </div>
       <div className="nav-right">

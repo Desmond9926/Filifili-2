@@ -100,3 +100,21 @@ export const adminUserListQuerySchema = z.object({
   role: z.enum(["user", "creator", "moderator", "admin"]).optional(),
   disabled: z.enum(["true", "false"]).optional()
 });
+
+export const creatorApplicationSchema = z.object({
+  gender: z.string().min(1, "请选择性别"),
+  nationality: z.string().min(1, "请输入国籍"),
+  phone: z.string().min(6, "请输入有效电话号码").max(30),
+  bio: z.string().min(10, "请填写至少 10 个字的个人简介").max(500)
+});
+
+export const creatorApplicationReviewSchema = z.object({
+  action: z.enum(["approve", "reject"]),
+  reviewNote: z.string().max(300).optional()
+});
+
+export const creatorApplicationListQuerySchema = z.object({
+  page: z.coerce.number().int().positive().default(1),
+  pageSize: z.coerce.number().int().positive().max(100).default(20),
+  status: z.enum(["pending", "approved", "rejected"]).default("pending")
+});

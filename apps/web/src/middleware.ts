@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const ADMIN_ONLY_PATHS = ["/admin/categories", "/admin/users"];
+const ADMIN_ONLY_PATHS = ["/admin/categories", "/admin/users", "/admin/creator-applications"];
 
 const redirectToLogin = (req: NextRequest) => {
   const loginUrl = new URL("/login", req.url);

@@ -8,6 +8,8 @@ import { api } from "@/lib/api-client";
 import { uploadWithProgress } from "@/lib/uploader";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import Link from "next/link";
 
 const schema = z.object({
   title: z.string().min(1, "请输入标题"),
@@ -20,6 +22,7 @@ type FormValues = z.infer<typeof schema>;
 
 export default function UploadPage() {
   const router = useRouter();
+  const { data: user, isLoading: userLoading } = useCurrentUser();
   const [file, setFile] = useState<File | null>(null);
   const [progress, setProgress] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
@@ -99,6 +102,24 @@ export default function UploadPage() {
       setUploading(false);
     }
   });
+
+  if (userLoading) {
+    return <main><div className="card">加载中...</div></main>;
+  }
+
+  if (!user) {
+    return <main><div className="card">请先<Link href="/login">登录</Link>后投稿。</div></main>;
+  }
+
+  if (!["creator", "admin", "moderator"].includes(user.role)) {
+    return (
+      <main>
+        <div className="card">
+          当前账号还不是创作者，暂时无法投稿。<Link href="/creator-apply">去申请成为创作者</Link>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main>
