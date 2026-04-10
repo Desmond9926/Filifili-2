@@ -1,14 +1,32 @@
 import { api } from "@/lib/api-client";
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { VideoActions } from "@/components/video-actions";
 import { Recommendations } from "@/components/recommendations";
 
 async function getVideo(id: string) {
-  return api.get<{ video: any; stats?: any; userState?: { liked: boolean; favored: boolean } }>(
-    `${process.env.NEXT_PUBLIC_BASE_URL ?? ""}/api/videos/${id}`
-  );
+  const headerStore = headers();
+  const host = headerStore.get("x-forwarded-host") ?? headerStore.get("host");
+  const protocol = headerStore.get("x-forwarded-proto") ?? (host?.includes("localhost") ? "http" : "https");
+  const cookie = headerStore.get("cookie") ?? "";
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || (host ? `${protocol}://${host}` : "");
+
+  const res = await fetch(`${baseUrl}/api/videos/${id}`, {
+    headers: cookie ? { cookie } : {},
+    cache: "no-store"
+  });
+
+  const json = (await res.json().catch(() => null)) as
+    | { data?: { video: any; stats?: any; userState?: { liked: boolean; favored: boolean } }; message?: string }
+    | null;
+
+  return {
+    status: res.status,
+    data: json?.data,
+    message: json?.message
+  };
 }
 
 const Comments = dynamic(() => import("@/components/comments").then((m) => m.Comments), {
@@ -18,12 +36,36 @@ const Comments = dynamic(() => import("@/components/comments").then((m) => m.Com
 const Player = dynamic(() => import("@/components/player"), { ssr: false });
 
 export default async function VideoPage({ params }: { params: { id: string } }) {
-  const data = await getVideo(params.id).catch(() => null);
-  if (!data) return notFound();
-  const v = data.video;
-  const liked = data.userState?.liked;
-  const favored = data.userState?.favored;
-  const stats = data.stats;
+  const result = await getVideo(params.id).catch(() => null);
+  if (!result) {
+    return (
+      <main>
+        <div className="card">视频加载失败，请稍后重试。</div>
+      </main>
+    );
+  }
+  if (result.status === 404) return notFound();
+  if (result.status === 403) {
+    return (
+      <main>
+        <div className="card">
+          当前视频尚未公开或你没有访问权限。<Link href="/">返回首页</Link>
+        </div>
+      </main>
+    );
+  }
+  if (!result.data?.video) {
+    return (
+      <main>
+        <div className="card">视频加载失败，请稍后重试。</div>
+      </main>
+    );
+  }
+
+  const v = result.data.video;
+  const liked = result.data.userState?.liked;
+  const favored = result.data.userState?.favored;
+  const stats = result.data.stats;
   const playable = v.status === "published" && (v.assets?.hlsUrl || v.assets?.originalUrl);
 
   return (
