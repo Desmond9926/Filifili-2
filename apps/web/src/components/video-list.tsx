@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import Image from "next/image";
 import Link from "next/link";
 import { api } from "@/lib/api-client";
 
@@ -20,7 +21,20 @@ export function VideoList({ categoryId, sort = "latest" }: { categoryId?: string
     <div className="grid">
       {data.items.map((v) => (
         <div key={v.id} className="card video-card">
-          <div className="video-cover" />
+          {v.assets?.coverUrl || v.coverUrl ? (
+            <div className="video-cover media-cover">
+              <Image
+                src={v.assets?.coverUrl || v.coverUrl}
+                alt={v.title}
+                fill
+                sizes="(max-width: 768px) 100vw, 320px"
+                className="video-cover-image"
+                unoptimized
+              />
+            </div>
+          ) : (
+            <div className="video-cover" />
+          )}
           <div className="video-meta">
             <div className="video-title">{v.title}</div>
             <div className="hint">作者：{v.author?.username ?? "未知"}</div>

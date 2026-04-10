@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import Image from "next/image";
 import Link from "next/link";
 import { api } from "@/lib/api-client";
 
@@ -18,6 +19,18 @@ export function Recommendations({ videoId }: { videoId: string }) {
     <div className="grid">
       {data.items.map((v) => (
         <div key={v.id} className="card" style={{ padding: 12 }}>
+          {v.assets?.coverUrl || v.coverUrl ? (
+            <div className="video-cover media-cover" style={{ marginBottom: 10 }}>
+              <Image
+                src={v.assets?.coverUrl || v.coverUrl}
+                alt={v.title}
+                fill
+                sizes="(max-width: 768px) 100vw, 320px"
+                className="video-cover-image"
+                unoptimized
+              />
+            </div>
+          ) : null}
           <div className="video-title">{v.title}</div>
           <div className="hint">作者：{v.author?.username ?? ""}</div>
           <div className="hint">分类：{v.category?.name ?? "未分类"}</div>

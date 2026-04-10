@@ -352,6 +352,16 @@ label {
   margin-bottom: 10px;
 }
 
+.media-cover {
+  position: relative;
+  overflow: hidden;
+  background: #e5e7eb;
+}
+
+.video-cover-image {
+  object-fit: cover;
+}
+
 .video-meta {
   display: grid;
   gap: 6px;
