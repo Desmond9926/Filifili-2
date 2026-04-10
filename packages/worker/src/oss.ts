@@ -1,6 +1,8 @@
 import qiniu from "qiniu";
 import pLimit from "p-limit";
-import { readFile } from "node:fs/promises";
+import { mkdtemp, readFile, writeFile } from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 
 const required = (name: string, value: string | undefined) => {
   if (!value) throw new Error(`${name} is not configured`);
@@ -11,6 +13,15 @@ const getMac = () => {
   const accessKey = required("QINIU_ACCESS_KEY", process.env.QINIU_ACCESS_KEY);
   const secretKey = required("QINIU_SECRET_KEY", process.env.QINIU_SECRET_KEY);
   return new qiniu.auth.digest.Mac(accessKey, secretKey);
+};
+
+const getConfig = () => {
+  const config = new qiniu.conf.Config();
+  const region = process.env.QINIU_REGION;
+  if (region === "as0") {
+    config.zone = qiniu.zone.Zone_as0;
+  }
+  return config;
 };
 
 const createUploadToken = (key: string) => {
@@ -30,6 +41,27 @@ export const publicUrl = (key: string) => {
   if (useCdn && cdn) return `${cdn}/${key}`;
   const base = required("QINIU_PUBLIC_BASE_URL", process.env.QINIU_PUBLIC_BASE_URL).replace(/\/$/, "");
   return `${base}/${key}`;
+};
+
+export const getSignedDownloadUrl = (key: string) => {
+  const base = required("QINIU_PUBLIC_BASE_URL", process.env.QINIU_PUBLIC_BASE_URL).replace(/\/$/, "");
+  const bucketManager = new qiniu.rs.BucketManager(getMac(), getConfig());
+  const deadline = Math.floor(Date.now() / 1000) + 3600;
+  return bucketManager.privateDownloadUrl(base, key, deadline);
+};
+
+export const downloadObjectToTempFile = async (key: string) => {
+  const url = getSignedDownloadUrl(key);
+  const dir = await mkdtemp(path.join(os.tmpdir(), "filifili-source-"));
+  const ext = path.extname(key) || ".mp4";
+  const filePath = path.join(dir, `input${ext}`);
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error(`Qiniu download failed: ${res.status} ${await res.text()}`);
+  }
+  const arrayBuffer = await res.arrayBuffer();
+  await writeFile(filePath, Buffer.from(arrayBuffer));
+  return { filePath, dir, url };
 };
 
 export const putObject = async (key: string, filePath: string, mime?: string) => {

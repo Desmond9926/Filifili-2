@@ -2,7 +2,7 @@ import { Queue } from "bullmq";
 
 export interface TranscodeJobPayload {
   videoId: string;
-  inputUrl: string;
+  objectKey: string;
   originalUrl?: string;
 }
 

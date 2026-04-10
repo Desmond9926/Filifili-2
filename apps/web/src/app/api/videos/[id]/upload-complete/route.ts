@@ -5,7 +5,7 @@ import { mustAuth, mustRole } from "@/lib/auth";
 import { withErrorHandling } from "@/lib/response";
 import { validateUpload } from "@/lib/upload";
 import { enqueueTranscodeJob } from "@/lib/queue";
-import { publicUrl, sourceUrl } from "@/lib/oss";
+import { publicUrl } from "@/lib/oss";
 
 export const dynamic = "force-dynamic";
 
@@ -42,7 +42,6 @@ export const POST = withErrorHandling(async (req: NextRequest, ctx?: unknown) =>
   }
 
   const originalUrl = publicUrl(body.key);
-  const inputUrl = sourceUrl(body.key);
 
   logger.info("upload.complete.received", {
     userId: auth.userId,
@@ -80,13 +79,13 @@ export const POST = withErrorHandling(async (req: NextRequest, ctx?: unknown) =>
       })
     ]);
 
-    await enqueueTranscodeJob({ videoId, inputUrl, originalUrl });
+    await enqueueTranscodeJob({ videoId, objectKey: body.key, originalUrl });
 
     logger.info("transcode.job.enqueued", {
       userId: auth.userId,
       videoId,
       originalUrl,
-      inputUrl
+      objectKey: body.key
     });
 
     await prisma.video.update({ where: { id: videoId }, data: { status: "transcoding" } });

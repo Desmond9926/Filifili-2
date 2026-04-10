@@ -6,7 +6,7 @@ import fs from "node:fs/promises";
 import { TRANSCODE_QUEUE, TranscodeJobPayload } from "./queue.js";
 import { logger } from "./logger.js";
 import { transcodeToHls, cleanupDir } from "./transcode.js";
-import { uploadManyWithRetry } from "./oss.js";
+import { downloadObjectToTempFile, uploadManyWithRetry } from "./oss.js";
 
 const prisma = new PrismaClient();
 
@@ -17,18 +17,22 @@ const connection = process.env.REDIS_URL
     })();
 
 const processJob = async (job: Job<TranscodeJobPayload>) => {
-  const { videoId, inputUrl, originalUrl } = job.data;
+  const { videoId, objectKey, originalUrl } = job.data;
 
   let transcodeDir: string | undefined;
+  let sourceDir: string | undefined;
   try {
+    const downloaded = await downloadObjectToTempFile(objectKey);
+    sourceDir = downloaded.dir;
     logger.info("transcode.start", {
       videoId,
       jobId: job.id,
       attempt: job.attemptsMade + 1,
-      inputUrl,
+      objectKey,
+      inputUrl: downloaded.url,
       originalUrl
     });
-    const result = await transcodeToHls(inputUrl);
+    const result = await transcodeToHls(downloaded.filePath);
     transcodeDir = result.baseDir;
 
     const hlsDir = path.dirname(result.hlsPath);
@@ -76,6 +80,12 @@ const processJob = async (job: Job<TranscodeJobPayload>) => {
       resolution: result.resolution
     });
   } finally {
+    if (sourceDir) {
+      const tmpPrefix = os.tmpdir();
+      if (sourceDir.startsWith(tmpPrefix)) {
+        await cleanupDir(sourceDir).catch(() => {});
+      }
+    }
     // best-effort cleanup of temp dir if within tmp path
     if (transcodeDir) {
       const tmpPrefix = os.tmpdir();

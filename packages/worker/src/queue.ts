@@ -14,7 +14,7 @@ export const transcodeQueue = new Queue(TRANSCODE_QUEUE, { connection });
 
 export interface TranscodeJobPayload {
   videoId: string;
-  inputUrl: string;
+  objectKey: string;
   originalUrl?: string;
 }
 
